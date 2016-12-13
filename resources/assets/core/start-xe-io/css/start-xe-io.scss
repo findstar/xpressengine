@@ -62,14 +62,6 @@ html, body {
 }
 
 .start-wrap{
-  &:after { // 테스트
-    content:"큰 기기 데스크탑 ";
-    position: fixed;
-    top: 0;
-    left: 0;
-    color: red;
-    font-size: 20px;
-  }
   .xe-sm-only {
     display: none;
   }
@@ -113,7 +105,7 @@ html, body {
       }
       .icon-next-wrap {
         position: absolute;
-        bottom: 18px;
+        bottom: 38px;
         left: 50%;
         width: 42px;
         height: 42px;
@@ -198,30 +190,56 @@ html, body {
           width: 135px;
           height: 135px;
           margin-left: 20px;
-          border: 1px solid #e6e6e6;
-          background-color: #fafafa;
-          border-radius: 50% 50%;
+          a {
+            display: block;
+            height: 100%;
+            cursor:pointer
+          }
+          .inner-circle {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #e6e6e6;
+            background-color: #fafafa;
+            border-radius: 50% 50%;
+            transition: all 0.2s ease;
+          }
+          &:hover {
+            .inner-circle {
+              transform: translateY(-10px);
+              box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.1);
+            }
+          }
         }
         li:nth-child(1) {
           margin-left: 0;
-          background: #fafafa url(../img/icon_admin.png) center no-repeat;
-          background-size: 29px 55px;
+          .inner-circle {
+            background: #fafafa url(../img/icon_admin.png) center no-repeat;
+            background-size: 29px 55px;
+          }
         }
         li:nth-child(2) {
-          background: #fafafa url(../img/icon_develop.png) center no-repeat;
-          background-size: 44px 44px;
+          .inner-circle {
+            background: #fafafa url(../img/icon_develop.png) center no-repeat;
+            background-size: 44px 44px;
+          }
         }
         li:nth-child(3) {
-          background: #fafafa url(../img/icon_thema.png) 46px 40px  no-repeat;
-          background-size: 37px 53px;
+          .inner-circle {
+            background: #fafafa url(../img/icon_thema.png) 46px 40px  no-repeat;
+            background-size: 37px 53px;
+          }
         }
         li:nth-child(4) {
-          background: #fafafa url(../img/icon_css.png) center no-repeat;
-          background-size: 36px 52px;
+          .inner-circle {
+            background: #fafafa url(../img/icon_css.png) center no-repeat;
+            background-size: 36px 52px;
+          }
         }
         li:nth-child(5) {
-          background: #fafafa url(../img/icon_youtube.png) center no-repeat;
-          background-size: 51px 37px;
+          .inner-circle {
+            background: #fafafa url(../img/icon_youtube.png) center no-repeat;
+            background-size: 51px 37px;
+          }
         }
         span {
           position: absolute;
@@ -231,6 +249,7 @@ html, body {
           margin-top: 10px;
           font-size: 14px;
           text-align: center;
+          transition: all 0.2s ease;
         }
       }
     }
@@ -286,6 +305,7 @@ html, body {
         font-size: 60px;
         font-weight: normal;
         text-align: center;
+        color: #333;
       }
       ul {
         margin: 56px auto 0;
@@ -416,6 +436,8 @@ html, body {
           width: 50px;
           height: 50px;
           padding: 0;
+          border-color: #4669cd;
+          background-color: #4669cd;
           i {
             font-size: 29px;
           }
@@ -492,15 +514,6 @@ html, body {
 
 
 @media (max-width: 1199px) {
-  .start-wrap:after {// 테스트
-    content:"중간 기기 데스크탑 ";
-    position: fixed;
-    top: 0;
-    left: 0;
-    color: red;
-    font-size: 20px;
-  }
-
   .start-wrap {
     .xe-start {
       &-guide{
@@ -544,15 +557,6 @@ html, body {
   
 }
 @media (max-width: 991px) {
-  .start-wrap:after {// 테스트
-    content:"작은 기기 태블릿 ";
-    position: fixed;
-    top: 0;
-    left: 0;
-    color: red;
-    font-size: 20px;
-  }
-  
   .start-wrap {
     .xe-start {
       &-guide{
@@ -582,7 +586,9 @@ html, body {
             margin-left: 0;
           }
           li:nth-child(3) {
-            background: #fafafa url(../img/icon_thema.png) 37px 28px  no-repeat;
+            .inner-circle {
+              background: #fafafa url(../img/icon_thema.png) 37px 28px  no-repeat;
+            }
           }
         }
       }
@@ -613,14 +619,6 @@ html, body {
   }
 }
 @media (max-width: 767px) {
-  .start-wrap:after {// 테스트
-    content:"	매우 작은 기기 모바일폰 ";
-    position: fixed;
-    top: 0;
-    left: 0;
-    color: red;
-    font-size: 20px;
-  }
   .start-wrap{
     .xe-sm-only {
       display: block;
@@ -695,22 +693,32 @@ html, body {
             margin: 0 0 44px 0;
           }
           li:nth-child(1) {
-            background-size: 35px 67px;
+            .inner-circle {
+              background-size: 35px 67px;
+            }
           }
           li:nth-child(2) {
             margin-left: 27px;
-            background-size: 56px 56px;
+            .inner-circle {
+              background-size: 56px 56px;
+            }
           }
           li:nth-child(3) {
-            background-size: 45px 65px;
+            .inner-circle {
+              background-size: 45px 65px;
+            }
           }
           li:nth-child(4) {
             margin-left: 27px;
-            background-size: 46px 66px;
+            .inner-circle {
+              background-size: 46px 66px;
+            }
           }
           li:nth-child(5) {
             margin-bottom: 81px;
-            background-size: 58px 42px;
+            .inner-circle {
+              background-size: 58px 42px;
+            }
           }
         }
       }
@@ -871,10 +879,5 @@ html, body {
         }
       }
     }
-    
-    
-  
-    
   }
-  
 }

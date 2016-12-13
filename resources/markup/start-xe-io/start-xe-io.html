@@ -54,19 +54,34 @@
           <p>개발자를 위한 XE3 사용 방법은 물론이고 사이트 운영자를 위한 매뉴얼을 갖추고 있습니다.<br class="xe-lg-only"> 동영상 강좌를 통해 사용자가 더 쉽게 시작할 수 있도록 지원하고 있습니다.<br> 사용자의 요구를 듣고 움직이면서 여러분에게 한발 더 깊게 들어갑니다.</p>
           <ul class="xe-gulide-list">
             <li>
-              <span>사이트 관리자</span>
+              <a href="#" target="_blank">
+                <div class="inner-circle"></div>
+                <span>사이트 관리자</span>
+              </a>
             </li>
             <li>
-              <span>개발자</span>
+              <a href="#" target="_blank">
+                <div class="inner-circle"></div>
+                <span>개발자</span>
+              </a>
             </li>
             <li>
-              <span>테마 개발자</span>
+              <a href="#" target="_blank">
+                <div class="inner-circle"></div>
+                <span>테마 개발자</span>
+              </a>
             </li>
             <li>
-              <span>CSS, Javascript</span>
+              <a href="#" target="_blank">
+                <div class="inner-circle"></div>
+                <span>CSS, Javascript</span>
+              </a>
             </li>
             <li>
-              <span>유투브 채널</span>
+              <a href="#" target="_blank">
+                <div class="inner-circle"></div>
+                <span>유투브 채널</span>
+              </a>
             </li>
           </ul>
         </div><!-- //container  -->
@@ -173,12 +188,11 @@
       </footer>
     </div>
     <script type="text/javascript">
-      // function intervalIcon(){
-        // setInterval(function(){}, )
-      // }
-      $('a').on('click', function (){
-        return false;
-      })
+      $(document).ready(function (){
+        setInterval(function(){
+          $('.icon-next-wrap .icon-next').animate({'margin-top': '20px'}, 250).animate({'margin-top': '0px'}, 300);
+        }, 1500);
+      });
     </script>
 </body>
 
