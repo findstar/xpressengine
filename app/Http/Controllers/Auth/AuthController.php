@@ -59,7 +59,7 @@ class AuthController extends Controller
         XeTheme::selectSiteTheme();
         XePresenter::setSkinTargetId('member/auth');
 
-        $this->middleware('guest', ['except' => ['getLogout', 'getConfirm']]);
+        $this->middleware('guest', ['except' => ['getLogin', 'getLogout', 'getConfirm']]);
     }
 
     /**
@@ -216,10 +216,17 @@ class AuthController extends Controller
     {
         $redirectUrl = $this->redirectPath = $request->get('redirectUrl', $urlGenerator->previous());
 
+        if(auth()->check()) {
+            return redirect($request->get('redirectUrl', '/'));
+        }
+
+        app('session.store')->put('url.intended', $redirectUrl);
+
         // common config
         $config = app('xe.config')->get('user.common');
 
         $loginRuleName = 'login';
+
         \XeFrontend::rule($loginRuleName, [
             'email' => 'required|email_prefix',
             'password' => 'required'
@@ -251,13 +258,9 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         $credentials['status'] = \XeUser::STATUS_ACTIVATED;
 
-        try {
-            if ($this->auth->attempt($credentials, $request->has('remember'))) {
-                $this->redirectPath = $request->get('redirectUrl');
-                return redirect()->intended($this->redirectPath());
-            }
-        } catch (\Exception $e) {
-            throw $e;
+        if ($this->auth->attempt($credentials, $request->has('remember'))) {
+            $this->redirectPath = $request->get('redirectUrl');
+            return redirect()->intended($this->redirectPath());
         }
 
         return redirect($this->loginPath())
@@ -280,8 +283,10 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getLogout()
+    public function getLogout(UrlGenerator $urlGenerator, Request $request)
     {
+        $redirectUrl = $this->redirectAfterLogout = $request->get('redirectUrl', $urlGenerator->previous());
+
         $this->auth->logout();
 
         return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');

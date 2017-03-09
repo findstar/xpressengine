@@ -1,44 +1,18 @@
 @if ($config == null)
 	<script>
-		var storeCategory = function(obj) {
-			var params = {},
-					id = $(obj).closest('form').find('[name="id"]').val();
+		var storeCategoryInfo = {
+			url: "{{route('fieldType.storeCategory')}}",
+			text: "{{xe_trans('xe::categoryManagement')}}"
+		};
 
-			if (id == '') {
-				System.import('xecore:/common/js/griper').then(function (griper) {
-					griper.form($(obj), 'You must first create a category ID.');
-				});
-				return;
-			} else {
-				System.import('xecore:/common/js/griper').then(function (griper) {
-					griper.form.fn.clear($(obj).closest('form'));
-				});
-			}
-
-			params['categoryName'] = id;
-
-			XE.ajax({
-				type: 'post',
-				dataType: 'json',
-				data: params,
-				url: '{{route('fieldType.storeCategory')}}',
-				success: function(data) {
-					var section = $(obj).closest('.__xe_df_category');
-					section.find('[name="categoryId"]').val(data.id);
-					section.find('button').hide();
-					section.append(
-							$('<a>').text('{{xe_trans('xe::categoryManagement')}}').prop('target', '_blank').prop('href', '/settings/category/'+data.id)
-					);
-				}
-			});
-		}
+		DynamicLoadManager.jsLoad('/assets/core/common/js/storeCategory.js');
 	</script>
 @endif
 
 <div class="form-group __xe_df_category">
 	<input type="hidden" name="categoryId" value="{{ $config != null ? $config->get('categoryId') : '' }}" />
 	@if ($config == null)
-		<button type="button" onclick="storeCategory(this)">{{xe_trans('xe::createCategoryGroup')}}</button>
+		<button type="button" id="btnCreateCategory">{{xe_trans('xe::createCategoryGroup')}}</button>
 	@else
 		<a href="{{ route('manage.category.show', ['id' => $config->get('categoryId')]) }}" target="_blank">{{xe_trans('xe::categoryManagement')}}</a>
 	@endif

@@ -8,9 +8,11 @@ module.exports = (() => {
   const $ = plugins();
 
   return {
-    'webpack:react': (callback) => {
+    'webpack': (callback) => {
       webpack(webpackConfig, (err, stats) => {
-        if (err) throw new gutil.PluginError('webpack', err);
+        if (err) {
+          throw new gutil.PluginError('webpack', err);
+        }
 
         callback();
       });

@@ -83,8 +83,10 @@
     }
 
     $locale = 'ko';
+    $selectedLocale = 'Language';
     if (isset($_COOKIE['install_locale']) && file_exists(getLangFilePath($_COOKIE['install_locale'])) === true) {
         $locale = $_COOKIE['install_locale'];
+        $selectedLocale = $allLangs[$_COOKIE['install_locale']]['localeExpression'];
     }
     $langs = $allLangs[$locale];
 
@@ -126,8 +128,8 @@
     <script src="../assets/core/common/js/dynamicLoadManager.js" type="text/javascript"></script>
     <script src="../assets/vendor/jquery/jquery.min.js"></script>
 
-    <script src="../assets/jspm_packages/system.js"></script>
-    <script src="../assets/systemjs.config.js"></script>
+    <script src="../assets/vendor/vendor.bundle.js" type="text/javascript"></script>
+    <script src="../assets/bundle.js" type="text/javascript"></script>
     <script src="../assets/core/common/js/xe.bundle.js"></script>
 
     <link rel="stylesheet" href="../assets/core/xe-ui-component/xe-ui-component.css">
@@ -166,7 +168,7 @@
                 <span class="text-installer"><span class="xe-sr-only">installer</span></span>
             </h2>
             <div class="xe-dropdown">
-                <button class="xe-btn" type="button" data-toggle="xe-dropdown">Language</button>
+                <button class="xe-btn" type="button" data-toggle="xe-dropdown"><?=$selectedLocale?></button>
                 <ul class="xe-dropdown-menu">
                     <?php
                     foreach ($allLangs as $key => $value) {

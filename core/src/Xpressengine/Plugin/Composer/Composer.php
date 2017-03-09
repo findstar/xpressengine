@@ -13,8 +13,11 @@
  */
 namespace Xpressengine\Plugin\Composer;
 
+use Composer\Installer\InstallerEvent;
 use Composer\Plugin\CommandEvent;
 use Composer\Script\Event;
+use Illuminate\Foundation\Application;
+use Xpressengine\Installer\XpressengineInstaller;
 use Xpressengine\Plugin\MetaFileReader;
 use Xpressengine\Plugin\PluginScanner;
 
@@ -28,31 +31,49 @@ use Xpressengine\Plugin\PluginScanner;
  */
 class Composer
 {
-    protected static $metaFileName = 'composer.json';
+    protected static $composerFile = 'composer.json';
 
     protected static $pluginsDir = 'plugins';
 
-    protected static $packagistUrl = 'https://xpressengine.io';
+    protected static $packagistUrl = null;
 
-    protected static $composerFile = 'storage/app/composer.plugins.json';
+    protected static $packagistToken = null;
+
+    protected static $pluginComposerFile = 'storage/app/composer.plugins.json';
 
     protected static $installedFlagPath = 'storage/app/installed';
 
     public static $basePlugins = [
-        'xpressengine-plugin/alice' => '0.9.5',
-        'xpressengine-plugin/board' => '0.9.9',
-        'xpressengine-plugin/ckeditor' => '0.9.7',
-        'xpressengine-plugin/claim' => '0.9.2',
-        'xpressengine-plugin/comment' => '0.9.6',
-        'xpressengine-plugin/external_page' => '0.9.3',
+        'xpressengine-plugin/alice' => '0.9.7',
+        'xpressengine-plugin/board' => '0.9.13',
+        'xpressengine-plugin/ckeditor' => '0.9.9',
+        'xpressengine-plugin/claim' => '0.9.3',
+        'xpressengine-plugin/comment' => '0.9.7',
+        'xpressengine-plugin/external_page' => '0.9.4',
         'xpressengine-plugin/google_analytics' => '0.9.2',
         'xpressengine-plugin/news_client' => '0.9.3',
         'xpressengine-plugin/orientator' => '0.9.1',
         'xpressengine-plugin/page' => '0.9.2',
-        'xpressengine-plugin/social_login' => '0.9.6',
+        'xpressengine-plugin/social_login' => '0.9.7',
         'xpressengine-plugin/emoticon' => '0.9.0',
         'xpressengine-plugin/widget_page' => '0.9.0'
     ];
+
+    /**
+     * @param string $packagistUrl
+     */
+    public static function setPackagistUrl($packagistUrl)
+    {
+        self::$packagistUrl = $packagistUrl;
+    }
+
+    /**
+     * @param null $authToken
+     */
+    public static function setPackagistToken($authToken)
+    {
+        self::$packagistToken = $authToken;
+    }
 
     /**
      * composer가 실행될 때 호출된다. composer.plugins.json 파일이 있는지 조사하고, 생성한다.
@@ -61,14 +82,21 @@ class Composer
      *
      * @return void
      */
-    public static function init(CommandEvent $event)
+    public static function command(CommandEvent $event)
     {
-        $path = static::$composerFile;
+        if (!in_array($event->getCommandName(), ['update', 'install'])) {
+            return;
+        }
+
+        $path = static::$pluginComposerFile;
         $writer = self::getWriter($path);
+        $writer->reset();
 
         // XE가 설치돼 있지 않을 경우, base plugin require에 추가
         if (!file_exists(static::$installedFlagPath)) {
-            $writer->reset();
+            if (!defined('__XE_PLUGIN_MODE__')) {
+                define('__XE_PLUGIN_MODE__', true);
+            }
             foreach (static::$basePlugins as $plugin => $version) {
                 if ($writer->get('replace.'.$plugin) === null) {
                     $writer->install($plugin, $version, date("Y-m-d H:i:s"));
@@ -78,16 +106,16 @@ class Composer
                     );
                 }
             }
-            if (!defined('__XE_PLUGIN_MODE__')) {
-                define('__XE_PLUGIN_MODE__', true);
-            }
             static::applyRequire($writer);
-            $event->getOutput()->writeln("xpressengine-installer: running in update mode");
+            $event->getOutput()->writeln("xpressengine-installer: running in initialize mode");
         } else {
-            static::applyRequire($writer);
-            if (static::isUpdateMode($event)) {
+
+            // 플러그인 명령을 실행한 경우
+            if (defined('__XE_PLUGIN_MODE__')) {
+                static::applyRequire($writer);
                 $writer->setUpdateMode();
                 $event->getOutput()->writeln("xpressengine-installer: running in update mode");
+            // composer를 직접 실행한 경우
             } else {
                 $writer->setFixMode();
                 $event->getOutput()->writeln("xpressengine-installer: running in fix mode");
@@ -96,6 +124,27 @@ class Composer
         $writer->write();
 
         $event->getOutput()->writeln("xpressengine-installer: Plugin composer file[$path] is written");
+    }
+
+    /**
+     * preUpdateOrInstall
+     *
+     * @param Event $event
+     *
+     * @return void
+     */
+    public static function preUpdateOrInstall(Event $event)
+    {
+    }
+
+    public static function postDependenciesSolving(InstallerEvent $event)
+    {
+        if(static::$packagistUrl !== null && static::$packagistToken !== null) {
+            $io = $event->getIO();
+            $host = parse_url(static::$packagistUrl, PHP_URL_HOST);
+            $token = static::$packagistToken;
+            $io->setAuthentication($host, $token);
+        }
     }
 
     /**
@@ -108,15 +157,19 @@ class Composer
      */
     public static function postUpdate(Event $event)
     {
-        $path = static::$composerFile;
+        $path = static::$pluginComposerFile;
 
         $writer = self::getWriter($path);
 
         if (!file_exists(static::$installedFlagPath)) {
             $writer->cleanOperation();
+        } else {
+            $writer->set('xpressengine-plugin.operation.changed', XpressengineInstaller::$changed);
         }
-
         $writer->reset()->write();
+
+        require_once $event->getComposer()->getConfig()->get('vendor-dir').'/autoload.php';
+        static::clearCompiled();
     }
 
     /**
@@ -129,9 +182,9 @@ class Composer
      */
     protected static function getWriter($path)
     {
-        $reader = new MetaFileReader(static::$metaFileName);
+        $reader = new MetaFileReader(static::$composerFile);
         $scanner = new PluginScanner($reader, static::$pluginsDir);
-        $writer = new ComposerFileWriter($path, $scanner, static::$packagistUrl);
+        $writer = new ComposerFileWriter($path, $scanner);
 
         return $writer;
     }
@@ -180,4 +233,26 @@ class Composer
         }
         return false;
     }
+
+    /**
+     * Clear the cached Laravel bootstrapping files.
+     *
+     * @return void
+     */
+    protected static function clearCompiled()
+    {
+
+        if(!$laravel = Application::getInstance()) {
+            $laravel = new Application(getcwd());
+        }
+
+        if (file_exists($compiledPath = $laravel->getCachedCompilePath())) {
+            @unlink($compiledPath);
+        }
+
+        if (file_exists($servicesPath = $laravel->getCachedServicesPath())) {
+            @unlink($servicesPath);
+        }
+    }
+
 }

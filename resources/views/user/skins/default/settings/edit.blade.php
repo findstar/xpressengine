@@ -92,7 +92,7 @@
                 <em class="text-gray2">{{ xe_trans('xe::canChangeMemberName') }}</em>
                 <input type="text" class="__xe_nameInput xe-form-control" name="name" value="{{ $user->getDisplayName() }}">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <em class="__xe_message text-message">{{ xe_trans('xe::isYourCurrentName') }}</em>
+                <em class="__xe_message text-message"></em>
             </div>
             <div class="xe-btn-group-all">
                 <button class="__xe_saveBtn xe-btn xe-btn-primary">{{ xe_trans('xe::applyModified') }}</button>
@@ -119,7 +119,7 @@
         <div class="setting-detail" style="display: none;">
             <div class="setting-detail-content">
                 <p>{{ xe_trans('xe::changePassword') }}</p>
-                <em class="text-gray2">{{ $passwordLevel['description'] }}</em>
+                <em class="text-gray2">{{ xe_trans($passwordLevel['description']) }}</em>
                 <div class="password-content __xe_currentPassword" @if(!$user->password) style="display: none;" @endif>
                     <p class="txt_pw">{{ xe_trans('xe::currentPassword') }}</p>
                     <input type="password" class="xe-form-control" name="current_password">
@@ -172,7 +172,7 @@
                     <em class="text-gray">{{ xe_trans('xe::warningAboutAccountDeletion') }}</em>
                 </div>
                 <div class="setting-right">
-                    <button class="__xe_editBtn xe-btn xe-btn-link xe-btn-primary">{{ xe_trans('xe::deleteOk') }}</button>
+                    <button class="__xe_editBtn xe-btn xe-btn-link text-blue">{{ xe_trans('xe::deleteOk') }}</button>
                 </div>
             </div>
         </div>

@@ -406,8 +406,9 @@ class PluginHandler
                 /** @var PluginEntity $plugin */
                 $installedVersion = $plugin->getInstalledVersion();
                 $sourceVersion = $plugin->getVersion();
-                if ($sourceVersion !== $installedVersion) {
-                    if ($plugin->checkInstalled($installedVersion) && $plugin->checkUpdated($installedVersion)) {
+
+                if ($plugin->getStatus() == static::STATUS_ACTIVATED && $sourceVersion !== $installedVersion) {
+                    if ($plugin->checkInstalled() && $plugin->checkUpdated()) {
                         $this->setPluginStatus(
                             $plugin->getId(),
                             ['version' => $sourceVersion, 'status' => $plugin->getStatus()]
@@ -589,8 +590,11 @@ class PluginHandler
                 $package = key($runnings);
             }
             list(, $id) = explode('/', $package);
-            $runningsInfo[$package] = $this->provider->find($id);
-            $runningsInfo[$package]->pluginId = $id;
+            $info = $this->provider->find($id);
+            if($info !== null) {
+                $runningsInfo[$package] = $info;
+                $runningsInfo[$package]->pluginId = $id;
+            }
         }
 
         $changed = $writer->get('xpressengine-plugin.operation.changed', []);
@@ -603,11 +607,21 @@ class PluginHandler
             }
         }
 
+        $failed = $writer->get('xpressengine-plugin.operation.failed', []);
+        foreach ($failed as $type) {
+            foreach ($type as $package => $version) {
+                list(, $id) = explode('/', $package);
+                if (!isset($runningsInfo[$package])) {
+                    $runningsInfo[$package] = $this->provider->find($id);
+                }
+            }
+        }
+
         if ($status === ComposerFileWriter::STATUS_RUNNING && $expired === true) {
             $status = 'expired';
         }
 
-        return compact('runnings', 'status', 'runningMode', 'expired', 'changed', 'runningsInfo');
+        return compact('runnings', 'status', 'runningMode', 'expired', 'changed', 'failed', 'runningsInfo');
     }
 
     /**

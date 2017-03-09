@@ -584,9 +584,12 @@ Route::settings(
     function () {
         Route::get('edit', ['as' => 'settings.theme.edit', 'uses' => 'ThemeController@edit', 'settings_menu'=>'setting.theme.edit']);
         Route::post('edit', ['as' => 'settings.theme.edit', 'uses' => 'ThemeController@update']);
+        Route::put('edit-auth', ['as' => 'settings.theme.edit.auth', 'uses' => 'ThemeController@auth']);
+
 
         Route::get('setting', ['as' => 'settings.theme.setting', 'uses' => 'ThemeController@editSetting']);
-        Route::post('setting', ['as' => 'settings.theme.setting', 'uses' => 'ThemeController@updateSetting']);
+        Route::put('setting', ['as' => 'settings.theme.setting', 'uses' => 'ThemeController@updateSetting']);
+        Route::delete('setting', ['as' => 'settings.theme.setting', 'uses' => 'ThemeController@deleteSetting']);
 
         Route::post('setting/create', ['as' => 'settings.theme.setting.create', 'uses' => 'ThemeController@createSetting']);
     }
@@ -726,7 +729,6 @@ Route::settings('dynamicField', function () {
 
 Route::group(['prefix' => 'fieldType'], function () {
     Route::post('/storeCategory', ['as' => 'fieldType.storeCategory', 'uses' => 'FieldTypeController@storeCategory']);
-    Route::get('/storeCategory', ['as' => 'fieldType.storeCategory', 'uses' => 'FieldTypeController@storeCategory']);
 });
 
 Route::group(['prefix' => 'draft'], function () {
