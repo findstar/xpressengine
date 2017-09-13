@@ -44,7 +44,7 @@ class InstallController extends Controller
                 'admin_password' => 'required|confirmed',
                 'admin_password_confirmation' => 'required',
                 'database_name' => 'required',
-                'database_password' => 'required',
+                'database_driver' => 'required',
                 'web_url' => 'url',
             ]
         );
@@ -67,6 +67,7 @@ class InstallController extends Controller
                 'display_name' => $request->get('admin_display_name') != '' ? $request->get('admin_display_name') : 'admin',
             ],
             'database' => [
+                'driver' => $request->get('database_driver') != '' ? $request->get('database_driver') : 'mysql',
                 'host' => $request->get('database_host') != '' ? $request->get('database_host') : 'localhost',
                 'port' => $request->get('database_port') != '' ? $request->get('database_port') : '3306',
                 'dbname' => $request->get('database_name'),

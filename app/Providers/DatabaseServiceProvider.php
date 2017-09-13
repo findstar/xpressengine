@@ -23,6 +23,7 @@ use Xpressengine\Database\ProxyManager;
 use Xpressengine\Database\TransactionHandler;
 use Xpressengine\Database\Eloquent\DynamicModel;
 use Xpressengine\Database\VirtualConnection;
+use Xpressengine\Extra\Cubrid\CubridConnection;
 
 /**
  * laravel service provider
@@ -62,6 +63,13 @@ class DatabaseServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->resolving('db', function($db) {
+            $db->extend('cubrid', function ($config, $name) {
+                $config['name'] = $name;
+                return new CubridConnection($config);
+            });
+        });
+
         DynamicModel::clearBootedModels();
 
         $this->app->singleton('xe.db.proxy', function ($app) {

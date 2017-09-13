@@ -36,7 +36,7 @@
                 break;
 
             case 'pdo' :
-                $result = extension_loaded('PDO') && extension_loaded('pdo_mysql');
+                $result = extension_loaded('PDO') && (extension_loaded('pdo_mysql') || extension_loaded('pdo_cubrid'));
                 break;
             
             case "curl" :
@@ -227,28 +227,41 @@
                 </colgroup>
                 <tbody>
                 <tr>
+                    <th scope="row">Driver</th>
+                    <td>
+                        <select class="xe-form-control" name="database_driver">
+                            <?php if(extension_loaded('pdo_cubrid')): ?>
+                            <option value="cubrid" selected>CUBRID</option>
+                            <?php endif ?>
+                            <?php if(extension_loaded('pdo_mysql')) : ?>
+                            <option value="mysql">mysql</option>
+                            <?php endif ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
                     <th scope="row">Host</th>
-                    <td><input type="text" class="xe-form-control" name="database_host" placeholder="<?=trans('inputDBHost')?>(default: localhost)"></td>
+                    <td><input type="text" class="xe-form-control" name="database_host" value="" placeholder="<?=trans('inputDBHost')?>(default: localhost)"></td>
                 </tr>
                 <tr>
                     <th scope="row">Port</th>
-                    <td><input type="text" class="xe-form-control" name="database_port" placeholder="<?=trans('inputDBPort')?>(default: 3306)"></td>
+                    <td><input type="text" class="xe-form-control" name="database_port" value="" placeholder="<?=trans('inputDBPort')?>(default: 3306)"></td>
                 </tr>
                 <tr>
                     <th scope="row">Database Name</th>
-                    <td><input type="text" class="xe-form-control" name="database_name" placeholder="<?=trans('inputDBName')?>"></td>
+                    <td><input type="text" class="xe-form-control" name="database_name" value="" placeholder="<?=trans('inputDBName')?>"></td>
                 </tr>
                 <tr>
                     <th scope="row">Database User Name</th>
-                    <td><input type="text" class="xe-form-control" name="database_user_name" placeholder="<?=trans('inputDBUser')?>(default: root)"></td>
+                    <td><input type="text" class="xe-form-control" name="database_user_name" value="" placeholder="<?=trans('inputDBUser')?>(default: root)"></td>
                 </tr>
                 <tr>
                     <th scope="row">Password</th>
-                    <td><input type="password" class="xe-form-control" name="database_password" placeholder="<?=trans('inputDBPassword')?>"></td>
+                    <td><input type="password" class="xe-form-control" name="database_password" value="" placeholder="<?=trans('inputDBPassword')?>"></td>
                 </tr>
                 <tr>
                     <th scope="row">Table Prefix</th>
-                    <td><input type="text" class="xe-form-control" name="database_prefix" placeholder="<?=trans('inputDBPrefix')?>(default: xe)"></td>
+                    <td><input type="text" class="xe-form-control" name="database_prefix" value="" placeholder="<?=trans('inputDBPrefix')?>(default: xe)"></td>
                 </tr>
                 </tbody>
             </table>
@@ -281,19 +294,19 @@
                 <tbody>
                 <tr>
                     <th scope="row">Email</th>
-                    <td><input type="text" class="xe-form-control" name="admin_email" placeholder="<?=trans('inputAdminEmail')?>"></td>
+                    <td><input type="text" class="xe-form-control" name="admin_email" value="" placeholder="<?=trans('inputAdminEmail')?>"></td>
                 </tr>
                 <tr>
                     <th scope="row">Display Name</th>
-                    <td><input type="text" class="xe-form-control" name="admin_display_name" placeholder="<?=trans('inputAdminName')?>(default: admin)"></td>
+                    <td><input type="text" class="xe-form-control" name="admin_display_name" value="" placeholder="<?=trans('inputAdminName')?>(default: admin)"></td>
                 </tr>
                 <tr>
                     <th scope="row">Password</th>
-                    <td><input type="password" class="xe-form-control" name="admin_password" placeholder="<?=trans('inputAdminPassword')?>"></td>
+                    <td><input type="password" class="xe-form-control" name="admin_password" value="" placeholder="<?=trans('inputAdminPassword')?>"></td>
                 </tr>
                 <tr>
                     <th scope="row">Password Check</th>
-                    <td><input type="password" class="xe-form-control" name="admin_password_confirmation" placeholder="<?=trans('reInputAdminPassword')?>"></td>
+                    <td><input type="password" class="xe-form-control" name="admin_password_confirmation" value="" placeholder="<?=trans('reInputAdminPassword')?>"></td>
                 </tr>
                 </tbody>
             </table>
@@ -430,7 +443,7 @@
             return false;
         }
 
-        var fields = ['database_name', 'database_password', 'admin_email', 'admin_password', 'admin_password_confirmation'];
+        var fields = ['database_name', 'admin_email', 'admin_password', 'admin_password_confirmation'];
         for (var i in fields) {
             var field = fields[i];
             if ($.trim($(f[field]).val()) == '') {
